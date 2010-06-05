@@ -1,0 +1,34 @@
+// CELL_LOCATE_POS35_STACK_040610-2
+
+// Open EPI image stack (all) & adjust images for binary conversion
+run("Image Sequence...", "open=[/Users/keseashore/Documents/Ogle's Lab/Pos35/img_000000000_S500_20x (EPI)_000.tif] first=1 last=200 number=892 starting=1 increment=1 scale=100 file=EPI or=[] sort");
+run("Sharpen", "stack");
+run("Enhance Contrast", "saturated=0.5 normalize equalize normalize_all");
+run("Remove Outliers...", "radius=2 threshold=50 which=Bright stack");
+run("Subtract Background...", "rolling=50 stack");
+run("Mean...", "radius=2 stack");
+run("8-bit");
+
+// Use Otsu method to threshold & convert to binary
+run("OtsuThresholding 8Bit");
+run("Make Binary", "  thresholded remaining black");
+
+// Use erode & open to merge some of the blobs
+run("Erode", "stack");
+run("Open", "stack");
+run("Erode", "stack");
+run("Open", "stack");
+run("Erode", "stack");
+run("Open", "stack");
+run("Erode", "stack");
+run("Open", "stack");
+
+// Use Analyze Particles function to outline borders & get info about shapes
+run("Analyze Particles...", "size=0-Infinity circularity=0.00-1.00 show=Outlines display exclude clear summarize record stack");
+run("AVI... ", "compression=JPEG jpeg=90 frame=7 save=[/Users/keseashore/Documents/Ogle's Lab/Pos35/Drawing of Pos35 040610-2.avi]");
+selectWindow("Pos35");
+close();
+selectWindow("Summary of Pos35");
+saveAs("Text", "/Users/keseashore/Documents/Ogle's Lab/Pos35/Summary of Pos35 040610-2");
+selectWindow("Results");
+saveAs("Measurements", "/Users/keseashore/Documents/Ogle's Lab/Pos35/Results 040610-2");
